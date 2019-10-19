@@ -1,0 +1,13 @@
+<resources>
+    <string name="app_name">Moodify</string>
+    <string name="love_button">Love</string>
+    <string name="joy_button">Joy</string>
+    <string name="happy_button">Happy</string>
+    <string name="anger_button">Anger</string>
+    <string name="sadness_button">Sad</string>
+    <string name="fear_button">Fear</string>
+    <string name="play_button">Play</string>
+    <string name="pause_button">Pause</string>
+    <string name="com_spotify_sdk_redirect_scheme">yourscheme</string>
+    <string name="com_spotify_sdk_redirect_host">yourhost</string>
+</resources>
