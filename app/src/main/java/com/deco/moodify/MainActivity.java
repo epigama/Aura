@@ -2,28 +2,44 @@ package com.deco.moodify;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
 import android.net.Uri;
-import android.support.annotation.NonNull;
-import android.support.design.widget.BottomNavigationView;
-import android.support.v7.app.AppCompatActivity;
+import androidx.annotation.NonNull;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.FileProvider;
+
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.spotify.android.appremote.api.ConnectionParams;
 import com.spotify.android.appremote.api.Connector;
 import com.spotify.android.appremote.api.SpotifyAppRemote;
-import com.spotify.protocol.client.Subscription;
-import com.spotify.protocol.types.PlayerState;
 import com.spotify.protocol.types.Track;
 import com.spotify.sdk.android.authentication.AuthenticationClient;
 import com.spotify.sdk.android.authentication.AuthenticationRequest;
 import com.spotify.sdk.android.authentication.AuthenticationResponse;
 
+import java.io.File;
+import java.io.IOException;
+
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import timber.log.Timber;
+
 public class MainActivity extends AppCompatActivity {
+    private static final int REQUEST_IMAGE_CAPTURE = 1;
+    private static final int REQUEST_STORAGE_PERMISSION = 1;
 
     private static final String CLIENT_ID = "fa5b55e21207424a9647c16ab7037a30";
     private static final String REDIRECT_URI = "moodify://callback/";
@@ -36,10 +52,35 @@ public class MainActivity extends AppCompatActivity {
     public static int anger_count;
     public static int sad_count;
 
+    private static final String FILE_PROVIDER_AUTHORITY = "com.example.android.fileprovider";
+
+//    @BindView(R.id.image_view)
+//    ImageView mImageView;
+//
+//    @BindView(R.id.emojify_button)
+//    Button mEmojifyButton;
+//    @BindView(R.id.share_button)
+//    FloatingActionButton mShareFab;
+//    @BindView(R.id.save_button) FloatingActionButton mSaveFab;
+//    @BindView(R.id.clear_button) FloatingActionButton mClearFab;
+//
+//    @BindView(R.id.title_text_view)
+//    TextView mTitleTextView;
+
+    private String mTempPhotoPath;
+
+    private Bitmap mResultsBitmap;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        // Bind the views
+        ButterKnife.bind(this);
+
+        // Set up Timber
+        Timber.plant(new Timber.DebugTree());
 
         BottomNavigationView bottomNavigationView = (BottomNavigationView) findViewById(R.id.navigationView);
         Menu menu = bottomNavigationView.getMenu();
@@ -62,6 +103,92 @@ public class MainActivity extends AppCompatActivity {
         });
 
         load_data();
+    }
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
+                                           @NonNull int[] grantResults) {
+        // Called when you request permission to read and write to external storage
+        switch (requestCode) {
+            case REQUEST_STORAGE_PERMISSION: {
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    // If you get permission, launch the camera
+                    launchCamera();
+                } else {
+                    // If you do not get permission, show a Toast
+                    Toast.makeText(this, R.string.permission_denied, Toast.LENGTH_SHORT).show();
+                }
+                break;
+            }
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        // If the image capture activity was called and was successful
+        if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
+            // Process the image and set it to the TextView
+            processAndSetImage();
+        } else {
+
+            // Otherwise, delete the temporary image file
+            BitmapUtils.deleteImageFile(this, mTempPhotoPath);
+        }
+    }
+
+    private void processAndSetImage() {
+
+        // Toggle Visibility of the views
+        mEmojifyButton.setVisibility(View.GONE);
+        mTitleTextView.setVisibility(View.GONE);
+        mSaveFab.setVisibility(View.VISIBLE);
+        mShareFab.setVisibility(View.VISIBLE);
+        mClearFab.setVisibility(View.VISIBLE);
+
+        // Resample the saved image to fit the ImageView
+        mResultsBitmap = BitmapUtils.resamplePic(this, mTempPhotoPath);
+
+
+        // Detect the faces and overlay the appropriate emoji
+        mResultsBitmap = new Emojifier().detectFacesandOverlayEmoji(this, mResultsBitmap);
+
+        // Set the new bitmap to the ImageView
+        mImageView.setImageBitmap(mResultsBitmap);
+    }
+
+    private void launchCamera() {
+
+        // Create the capture image intent
+        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+
+        // Ensure that there's a camera activity to handle the intent
+        if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
+            // Create the temporary File where the photo should go
+            File photoFile = null;
+            try {
+                photoFile = BitmapUtils.createTempImageFile(this);
+            } catch (IOException ex) {
+                // Error occurred while creating the File
+                ex.printStackTrace();
+            }
+            // Continue only if the File was successfully created
+            if (photoFile != null) {
+
+                // Get the path of the temporary file
+                mTempPhotoPath = photoFile.getAbsolutePath();
+
+                // Get the content URI for the image file
+                Uri photoURI = FileProvider.getUriForFile(this,
+                        FILE_PROVIDER_AUTHORITY,
+                        photoFile);
+
+                // Add the URI so the camera can store the image
+                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
+
+                // Launch the camera activity
+                startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
+            }
+        }
     }
 
     @Override
