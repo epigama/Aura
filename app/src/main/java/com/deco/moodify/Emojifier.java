@@ -4,9 +4,15 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
+
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+
+import android.os.Bundle;
 import android.util.Log;
 import android.util.SparseArray;
+import android.view.View;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.vision.Frame;
@@ -20,12 +26,21 @@ import com.spotify.sdk.android.authentication.AuthenticationClient;
 import com.spotify.sdk.android.authentication.AuthenticationRequest;
 import com.spotify.sdk.android.authentication.AuthenticationResponse;
 
+import java.util.zip.Inflater;
+
 import timber.log.Timber;
 
 import static android.content.ContentValues.TAG;
 
-class Emojifier extends AppCompatActivity {
+class Emojifier {
     Context context;
+
+    Emojifier(Context context){
+        this.context = context;
+    }
+
+//    Emojifier(){}
+
     private static final String CLIENT_ID = "4074007710e047fb97963d863c1ac6c0";
     private static final String REDIRECT_URI = "http://google.com/";
     private static final int REQUEST_CODE = 1337;
@@ -35,44 +50,10 @@ class Emojifier extends AppCompatActivity {
     private static final double SMILING_PROB_THRESHOLD = .15;
     private static final double EYE_OPEN_PROB_THRESHOLD = .5;
 
-    @Override
-    protected void onStart() {
-        super.onStart();
 
-        // Set the connection parameters
-        ConnectionParams connectionParams =
-                new ConnectionParams.Builder(CLIENT_ID)
-                        .setRedirectUri(REDIRECT_URI)
-                        .showAuthView(true)
-                        .build();
+    String detectFacesandOverlayEmoji(Context context, Bitmap picture) {
 
-        SpotifyAppRemote.disconnect(mSpotifyAppRemote);
-        SpotifyAppRemote.connect(this, connectionParams,
-                new Connector.ConnectionListener() {
-
-                    @Override
-                    public void onConnected(SpotifyAppRemote spotifyAppRemote) {
-                        mSpotifyAppRemote = spotifyAppRemote;
-                        mSpotifyAppRemote.getPlayerApi().setShuffle(true);
-                        Log.d("MainActivity", "Connected! Yay!");
-
-                    }
-
-                    @Override
-                    public void onFailure(Throwable throwable) {
-                        Log.e("MainActivity", throwable.getMessage(), throwable);
-                        Log.i(TAG, "onFailure: " + "triggered!!!!!!");
-                        // Something went wrong when attempting to connect! Handle errors here
-                    }
-                });
-    }
-
-
-
-
-    Bitmap detectFacesandOverlayEmoji(Context context, Bitmap picture) {
-
-
+        String emotion = "";
         FaceDetector detector = new FaceDetector.Builder(context)
                 .setTrackingEnabled(false)
                 .setClassificationType(FaceDetector.ALL_CLASSIFICATIONS)
@@ -102,82 +83,36 @@ class Emojifier extends AppCompatActivity {
                 Bitmap emojiBitmap = BitmapFactory.decodeResource(context.getResources(),
                         R.drawable.good);
                 switch (whichEmoji(face)) {
-                    case SMILE:
+                    case "SMILE":
 //                      onRecognize();
-                        love_song();
 //                        emojiBitmap = BitmapFactory.decodeResource(context.getResources(),
 //                                R.drawable.good);
                         Log.d(TAG, "detectFacesandOverlayEmoji: " + "smiling");
-                        Toast.makeText(this, "You're smiling :D", Toast.LENGTH_SHORT).show();
+                        emotion = "SMILE";
 
 
                         break;
-                    case FROWN:
+                    case "FROWN":
                         emojiBitmap = BitmapFactory.decodeResource(context.getResources(),
                                 R.drawable.doubt);
                         Log.d(TAG, "detectFacesandOverlayEmoji: " + "frown");
+                        emotion = "FROWN";
+
 
                         break;
-                    case CRAZY:
+                    case "LEFT_WINK_FROWN":
                         emojiBitmap = BitmapFactory.decodeResource(context.getResources(),
                                 R.drawable.crazy);
                         Log.d(TAG, "detectFacesandOverlayEmoji: " + "crazy");
+                        emotion = "LEFT WINK FROWN";
+
 
                         break;
-                    case RIGHT_WINK:
+                    case "RIGHT WINK FROWN":
                         emojiBitmap = BitmapFactory.decodeResource(context.getResources(),
                                 R.drawable.right_wink);
                         Log.d(TAG, "detectFacesandOverlayEmoji: " + "Right wink");
-
-                        break;
-                    case SHOCK:
-                        emojiBitmap = BitmapFactory.decodeResource(context.getResources(),
-                                R.drawable.shock);
-                        Log.d(TAG, "detectFacesandOverlayEmoji: " + "Shock");
-
-                        break;
-                    case SUSPECT:
-                        emojiBitmap = BitmapFactory.decodeResource(context.getResources(),
-                                R.drawable.suspect);
-                        Log.d(TAG, "detectFacesandOverlayEmoji: " + "Suspect");
-
-                        break;
-                    case DOUBT:
-                        emojiBitmap = BitmapFactory.decodeResource(context.getResources(),
-                                R.drawable.doubt);
-                        Log.d(TAG, "detectFacesandOverlayEmoji: " + "Doubt");
-
-                        break;
-                    case KISS:
-                        emojiBitmap = BitmapFactory.decodeResource(context.getResources(),
-                                R.drawable.kiss);
-                        Log.d(TAG, "detectFacesandOverlayEmoji: " + "Kiss");
-                        break;
-                    case LOVELY:
-                        emojiBitmap = BitmapFactory.decodeResource(context.getResources(),
-                                R.drawable.lovely);
-                        Log.d(TAG, "detectFacesandOverlayEmoji: " + "Lovely");
-                        break;
-
-                    case LEFT_WINK_FROWN:
-                        emojiBitmap = BitmapFactory.decodeResource(context.getResources(),
-                                R.drawable.left_wink);
-                        Log.d(TAG, "detectFacesandOverlayEmoji: " + "LEFT WINK FROWN");
-                        break;
-                    case RIGHT_WINK_FROWN:
-                        emojiBitmap = BitmapFactory.decodeResource(context.getResources(),
-                                R.drawable.right_wink);
-                        Log.d(TAG, "detectFacesandOverlayEmoji: " + "RIGHT WINK FROWN");
-                        break;
-                    case CLOSED_EYE_SMILE:
-                        emojiBitmap = BitmapFactory.decodeResource(context.getResources(),
-                                R.drawable.happy);
-                        Log.d(TAG, "detectFacesandOverlayEmoji: " + "CLOSED EYE SMILE");
-                        break;
-                    case CLOSED_EYE_FROWN:
-                        emojiBitmap = BitmapFactory.decodeResource(context.getResources(),
-                                R.drawable.crazy);
-                        Log.d(TAG, "detectFacesandOverlayEmoji: " + "CLOSED EYE FROWN");
+                        emotion =  "RIGHT WINK FROWN";
                         break;
                     default:
                         emojiBitmap = null;
@@ -188,61 +123,14 @@ class Emojifier extends AppCompatActivity {
 //                resultBitmap = addBitmapToFace(resultBitmap, emojiBitmap, face);
             }
         }
-
-
-
-        detector.release();
-
-        return resultBitmap;
-    }
-    public void onRecognize() {
-        AuthenticationRequest.Builder builder =
-                new AuthenticationRequest.Builder(CLIENT_ID, AuthenticationResponse.Type.TOKEN, REDIRECT_URI);
-
-        builder.setScopes(new String[]{"streaming"});
-        AuthenticationRequest request = builder.build();
-
-//        AuthenticationClient.openLoginActivity(this, REQUEST_CODE, request);
-try {
-    AuthenticationClient.openLoginInBrowser(this, request);
-}
-catch (Exception e){
-    e.printStackTrace();
-}
-    }
-
-    private void love_song() {
-        AuthenticationRequest.Builder builder =
-                new AuthenticationRequest.Builder(CLIENT_ID, AuthenticationResponse.Type.TOKEN, REDIRECT_URI);
-
-        builder.setScopes(new String[]{"streaming"});
-        AuthenticationRequest request = builder.build();
-
-//        AuthenticationClient.openLoginActivity(this, REQUEST_CODE, request);
-try {
-    AuthenticationClient.openLoginInBrowser(this, request);
-
-
-    mSpotifyAppRemote.getPlayerApi().play("spotify:playlist:4QuJ2DbcTe7R8lzqfNXz7v");
-    mSpotifyAppRemote.getPlayerApi()
-            .subscribeToPlayerState()
-            .setEventCallback(playerState -> {
-                Track track = playerState.track;
-                if (track != null) {
-                    Log.d("MainActivity", track.name + " by " + track.artist.name);
-                }
-            });
-}
-catch (Exception e){
-    e.printStackTrace();
-    Log.d(TAG, "love_song: didnt work :(");
-}
+        //detector.release();
+        return emotion;
     }
 
 
 
 
-    private static Emoji whichEmoji(Face face) {
+    private static String whichEmoji(Face face) {
 
         Timber.d("whichEmoji: smilingProb = " + face.getIsSmilingProbability());
         Timber.d("whichEmoji: leftEyeOpenProb = "
@@ -256,32 +144,38 @@ catch (Exception e){
         boolean leftEyeClosed = face.getIsLeftEyeOpenProbability() < EYE_OPEN_PROB_THRESHOLD;
         boolean rightEyeClosed = face.getIsRightEyeOpenProbability() < EYE_OPEN_PROB_THRESHOLD;
 
-        Emoji emoji;
+        String emoji;
         if(smiling) {
             if (leftEyeClosed && !rightEyeClosed) {
-                emoji = Emoji.LEFT_WINK;
+                emoji = "LEFT WINK";
+                Log.d(TAG, "left wink");
+//                Toast.makeText(context, "Left Wink", Toast.LENGTH_SHORT).show();
+
             }  else if(rightEyeClosed && !leftEyeClosed){
-                emoji = Emoji.RIGHT_WINK;
+                emoji = "RIGHT WINK";
+                Log.d(TAG, "right wink");
+
             } else if (leftEyeClosed){
-                emoji = Emoji.CLOSED_EYE_SMILE;
+                emoji = "CLOSED_EYE_SMILE";
+                Log.d(TAG, "closed eye smile");
+
             } else {
-                emoji = Emoji.SMILE;
+                emoji = "SMILE";
             }
         } else {
             if (leftEyeClosed && !rightEyeClosed) {
-                emoji = Emoji.LEFT_WINK_FROWN;
+                emoji = "LEFT_WINK_FROWN";
             }  else if(rightEyeClosed && !leftEyeClosed){
-                emoji = Emoji.RIGHT_WINK_FROWN;
+                emoji = "RIGHT WINK FROWN";
             } else if (leftEyeClosed){
-                emoji = Emoji.CLOSED_EYE_FROWN;
+                emoji = "CLOSED EYE FROWN";
             } else {
-                emoji = Emoji.FROWN;
+                emoji = "FROWN";
             }
         }
 
 
 
-        Timber.d("whichEmoji: " + emoji.name());
 
 
         return emoji;

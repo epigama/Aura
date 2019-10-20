@@ -43,9 +43,10 @@ public class MainActivity extends AppCompatActivity {
     @BindView(R.id.share_button) FloatingActionButton mShareFab;
     @BindView(R.id.save_button) FloatingActionButton mSaveFab;
     @BindView(R.id.clear_button) FloatingActionButton mClearFab;
+    @BindView(R.id.test_emotion_text) TextView emotionText;
 
     @BindView(R.id.title_text_view) TextView mTitleTextView;
-    @BindView(R.id.test_image) ImageView imageView;
+    //@BindView(R.id.test_image) ImageView imageView;
 
     private static final String CLIENT_ID = "4074007710e047fb97963d863c1ac6c0";
     private static final String REDIRECT_URI = "http://google.com/";
@@ -146,7 +147,7 @@ public class MainActivity extends AppCompatActivity {
 
 
         // Detect the faces and overlay the appropriate emoji
-        mResultsBitmap = new Emojifier().detectFacesandOverlayEmoji(this, bmp);
+      //  mResultsBitmap = new Emojifier().detectFacesandOverlayEmoji(this, bmp);
         Log.d("", "processAndSetImage: " + " Reached!");
 
         // Set the new bitmap to the ImageView
@@ -445,8 +446,19 @@ public class MainActivity extends AppCompatActivity {
         if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
             Bundle extras = intent.getExtras();
             Bitmap imageBitmap = (Bitmap) extras.get("data");
+            String emotion = new Emojifier(this).detectFacesandOverlayEmoji(getApplicationContext(), imageBitmap);
+            emotionText.setText(emotion);
+            if(emotion.equalsIgnoreCase("smile")){
+                happy_song();
+            }
+            else if(emotion.equalsIgnoreCase("frown")){
+                anger_song();
+            }
+            else if(emotion.equalsIgnoreCase("LEFT_WINK_FROWN") || emotion.equalsIgnoreCase("RIGHT WINK FROWN")){
+                joy_song();
+            }
 //            processAndSetImage(imageBitmap);
-            imageView.setImageBitmap(imageBitmap);
+            //ttimageView.setImageBitmap(imageBitmap);
 
 //            imageView.setImageBitmap(imageBitmap);
         } else {
@@ -482,6 +494,22 @@ public class MainActivity extends AppCompatActivity {
                 default:
                     // Handle other cases
             }
+        }
+    }
+
+    public void onRecognize() {
+        AuthenticationRequest.Builder builder =
+                new AuthenticationRequest.Builder(CLIENT_ID, AuthenticationResponse.Type.TOKEN, REDIRECT_URI);
+
+        builder.setScopes(new String[]{"streaming"});
+        AuthenticationRequest request = builder.build();
+
+//        AuthenticationClient.openLoginActivity(this, REQUEST_CODE, request);
+        try {
+            AuthenticationClient.openLoginInBrowser(this, request);
+        }
+        catch (Exception e){
+            e.printStackTrace();
         }
     }
 }
