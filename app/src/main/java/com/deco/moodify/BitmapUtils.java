@@ -8,6 +8,7 @@ import android.net.Uri;
 import android.os.Environment;
 import androidx.core.content.FileProvider;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.WindowManager;
 import android.widget.Toast;
 
@@ -21,7 +22,7 @@ import java.util.Locale;
 
 class BitmapUtils {
 
-    private static final String FILE_PROVIDER_AUTHORITY = "com.example.android.fileprovider";
+    private static final String FILE_PROVIDER_AUTHORITY = "com.example.android.fileprovider.MOODIFY";
 
 
     
@@ -57,13 +58,21 @@ class BitmapUtils {
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss",
                 Locale.getDefault()).format(new Date());
         String imageFileName = "JPEG_" + timeStamp + "_";
-        File storageDir = context.getExternalCacheDir();
+        File storageDir = context.getCacheDir();
 
-        return File.createTempFile(
-                imageFileName,  /* prefix */
-                ".jpg",         /* suffix */
-                storageDir      /* directory */
-        );
+        if(storageDir.canWrite()){
+            Log.d("", "createTempImageFile: " + "canWrite");
+            return File.createTempFile(
+                    imageFileName,  /* prefix */
+                    ".jpg",         /* suffix */
+                    storageDir );     /* directory */
+        }
+        else{
+            Log.d("", "createTempImageFile: " + "cannotWrite");
+        }
+
+        return null;
+
     }
 
     
@@ -122,7 +131,7 @@ class BitmapUtils {
             }
 
             // Add the image to the system gallery
-            galleryAddPic(context, savedImagePath);
+//            galleryAddPic(context, savedImagePath);
 
             // Show a Toast with the save location
             String savedMessage = context.getString(R.string.saved_message, savedImagePath);

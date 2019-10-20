@@ -27,7 +27,7 @@ import static android.content.ContentValues.TAG;
 class Emojifier extends AppCompatActivity {
     Context context;
     private static final String CLIENT_ID = "4074007710e047fb97963d863c1ac6c0";
-    private static final String REDIRECT_URI = "emote://callback/";
+    private static final String REDIRECT_URI = "http://google.com/";
     private static final int REQUEST_CODE = 1337;
     private SpotifyAppRemote mSpotifyAppRemote;
 
@@ -108,58 +108,76 @@ class Emojifier extends AppCompatActivity {
 //                        emojiBitmap = BitmapFactory.decodeResource(context.getResources(),
 //                                R.drawable.good);
                         Log.d(TAG, "detectFacesandOverlayEmoji: " + "smiling");
-//                        Toast.makeText(this, "You're smiling :D", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(this, "You're smiling :D", Toast.LENGTH_SHORT).show();
 
 
                         break;
                     case FROWN:
                         emojiBitmap = BitmapFactory.decodeResource(context.getResources(),
                                 R.drawable.doubt);
+                        Log.d(TAG, "detectFacesandOverlayEmoji: " + "frown");
+
                         break;
                     case CRAZY:
                         emojiBitmap = BitmapFactory.decodeResource(context.getResources(),
                                 R.drawable.crazy);
+                        Log.d(TAG, "detectFacesandOverlayEmoji: " + "crazy");
+
                         break;
                     case RIGHT_WINK:
                         emojiBitmap = BitmapFactory.decodeResource(context.getResources(),
                                 R.drawable.right_wink);
+                        Log.d(TAG, "detectFacesandOverlayEmoji: " + "Right wink");
+
                         break;
                     case SHOCK:
                         emojiBitmap = BitmapFactory.decodeResource(context.getResources(),
                                 R.drawable.shock);
+                        Log.d(TAG, "detectFacesandOverlayEmoji: " + "Shock");
+
                         break;
                     case SUSPECT:
                         emojiBitmap = BitmapFactory.decodeResource(context.getResources(),
                                 R.drawable.suspect);
+                        Log.d(TAG, "detectFacesandOverlayEmoji: " + "Suspect");
+
                         break;
                     case DOUBT:
                         emojiBitmap = BitmapFactory.decodeResource(context.getResources(),
                                 R.drawable.doubt);
+                        Log.d(TAG, "detectFacesandOverlayEmoji: " + "Doubt");
+
                         break;
                     case KISS:
                         emojiBitmap = BitmapFactory.decodeResource(context.getResources(),
                                 R.drawable.kiss);
+                        Log.d(TAG, "detectFacesandOverlayEmoji: " + "Kiss");
                         break;
                     case LOVELY:
                         emojiBitmap = BitmapFactory.decodeResource(context.getResources(),
                                 R.drawable.lovely);
+                        Log.d(TAG, "detectFacesandOverlayEmoji: " + "Lovely");
                         break;
 
                     case LEFT_WINK_FROWN:
                         emojiBitmap = BitmapFactory.decodeResource(context.getResources(),
                                 R.drawable.left_wink);
+                        Log.d(TAG, "detectFacesandOverlayEmoji: " + "LEFT WINK FROWN");
                         break;
                     case RIGHT_WINK_FROWN:
                         emojiBitmap = BitmapFactory.decodeResource(context.getResources(),
                                 R.drawable.right_wink);
+                        Log.d(TAG, "detectFacesandOverlayEmoji: " + "RIGHT WINK FROWN");
                         break;
                     case CLOSED_EYE_SMILE:
                         emojiBitmap = BitmapFactory.decodeResource(context.getResources(),
                                 R.drawable.happy);
+                        Log.d(TAG, "detectFacesandOverlayEmoji: " + "CLOSED EYE SMILE");
                         break;
                     case CLOSED_EYE_FROWN:
                         emojiBitmap = BitmapFactory.decodeResource(context.getResources(),
                                 R.drawable.crazy);
+                        Log.d(TAG, "detectFacesandOverlayEmoji: " + "CLOSED EYE FROWN");
                         break;
                     default:
                         emojiBitmap = null;
@@ -167,7 +185,7 @@ class Emojifier extends AppCompatActivity {
                 }
 
 
-                resultBitmap = addBitmapToFace(resultBitmap, emojiBitmap, face);
+//                resultBitmap = addBitmapToFace(resultBitmap, emojiBitmap, face);
             }
         }
 
