@@ -68,8 +68,6 @@ public class MainActivity extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
 
-
-
         // Set the connection parameters
         ConnectionParams connectionParams =
                 new ConnectionParams.Builder(CLIENT_ID)
@@ -119,7 +117,7 @@ public class MainActivity extends AppCompatActivity {
 //        AuthenticationClient.openLoginActivity(this, REQUEST_CODE, request);
         AuthenticationClient.openLoginInBrowser(this, request);
 
-        mSpotifyAppRemote.getPlayerApi().play("spotify:playlist:4QuJ2DbcTe7R8lzqfNXz7v");
+         mSpotifyAppRemote.getPlayerApi().play("spotify:playlist:4QuJ2DbcTe7R8lzqfNXz7v");
         mSpotifyAppRemote.getPlayerApi()
                 .subscribeToPlayerState()
                 .setEventCallback(playerState -> {
@@ -131,19 +129,87 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void joy_song() {
+        AuthenticationRequest.Builder builder =
+                new AuthenticationRequest.Builder(CLIENT_ID, AuthenticationResponse.Type.TOKEN, REDIRECT_URI);
+
+        builder.setScopes(new String[]{"streaming"});
+        AuthenticationRequest request = builder.build();
+
+//        AuthenticationClient.openLoginActivity(this, REQUEST_CODE, request);
+        AuthenticationClient.openLoginInBrowser(this, request);
+
         mSpotifyAppRemote.getPlayerApi().play("spotify:playlist:37i9dQZF1DXaSYtampkg5n");
+        mSpotifyAppRemote.getPlayerApi()
+                .subscribeToPlayerState()
+                .setEventCallback(playerState -> {
+                    Track track = playerState.track;
+                    if (track != null) {
+                        Log.d("MainActivity", track.name + " by " + track.artist.name);
+                    }
+                });
     }
 
     private void happy_song() {
+        AuthenticationRequest.Builder builder =
+                new AuthenticationRequest.Builder(CLIENT_ID, AuthenticationResponse.Type.TOKEN, REDIRECT_URI);
+
+        builder.setScopes(new String[]{"streaming"});
+        AuthenticationRequest request = builder.build();
+
+//        AuthenticationClient.openLoginActivity(this, REQUEST_CODE, request);
+        AuthenticationClient.openLoginInBrowser(this, request);
+
         mSpotifyAppRemote.getPlayerApi().play("spotify:playlist:37i9dQZF1DWSf2RDTDayIx");
+        mSpotifyAppRemote.getPlayerApi()
+                .subscribeToPlayerState()
+                .setEventCallback(playerState -> {
+                    Track track = playerState.track;
+                    if (track != null) {
+                        Log.d("MainActivity", track.name + " by " + track.artist.name);
+                    }
+                });
     }
 
     private void anger_song() {
+        AuthenticationRequest.Builder builder =
+                new AuthenticationRequest.Builder(CLIENT_ID, AuthenticationResponse.Type.TOKEN, REDIRECT_URI);
+
+        builder.setScopes(new String[]{"streaming"});
+        AuthenticationRequest request = builder.build();
+
+//        AuthenticationClient.openLoginActivity(this, REQUEST_CODE, request);
+        AuthenticationClient.openLoginInBrowser(this, request);
+
         mSpotifyAppRemote.getPlayerApi().play("spotify:playlist:1aUGVrGipiT9vOb11jO4n4");
+        mSpotifyAppRemote.getPlayerApi()
+                .subscribeToPlayerState()
+                .setEventCallback(playerState -> {
+                    Track track = playerState.track;
+                    if (track != null) {
+                        Log.d("MainActivity", track.name + " by " + track.artist.name);
+                    }
+                });
     }
 
     private void sadness_song() {
+        AuthenticationRequest.Builder builder =
+                new AuthenticationRequest.Builder(CLIENT_ID, AuthenticationResponse.Type.TOKEN, REDIRECT_URI);
+
+        builder.setScopes(new String[]{"streaming"});
+        AuthenticationRequest request = builder.build();
+
+//        AuthenticationClient.openLoginActivity(this, REQUEST_CODE, request);
+        AuthenticationClient.openLoginInBrowser(this, request);
+
         mSpotifyAppRemote.getPlayerApi().play("spotify:playlist:37i9dQZF1DX7qK8ma5wgG1");
+        mSpotifyAppRemote.getPlayerApi()
+                .subscribeToPlayerState()
+                .setEventCallback(playerState -> {
+                    Track track = playerState.track;
+                    if (track != null) {
+                        Log.d("MainActivity", track.name + " by " + track.artist.name);
+                    }
+                });
     }
 
 
