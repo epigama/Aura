@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Moodify</string>
+    <string name="app_name">Aura</string>
     <string name="love_button">Love</string>
     <string name="joy_button">Joy</string>
     <string name="happy_button">Happy</string>
@@ -10,4 +10,5 @@
     <string name="pause_button">Pause</string>
     <string name="com_spotify_sdk_redirect_scheme">yourscheme</string>
     <string name="com_spotify_sdk_redirect_host">yourhost</string>
+    <string name="app_desc">Your own mood assistant</string>
 </resources>
